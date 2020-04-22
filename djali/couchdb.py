@@ -196,7 +196,7 @@ class CloudiControl(KVStorageMixin):
     def _get_user(self, user_id):
         if isinstance(user_id, six.string_types):
             user_id = int(user_id, 10)
-        doc_id = '{:x}'.format(user_id)
+        doc_id = '{:032x}'.format(user_id)
 
         return self.database[doc_id]
 
