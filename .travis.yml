@@ -4,9 +4,7 @@ install:
 - pip install -r requirements.txt
 
 script:
-- cd doc
-- make html
-- touch build/html/.nojekyll
+- ./build.sh
 
 before_deploy:
 - find ./doc/build/html
