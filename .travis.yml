@@ -1,0 +1,24 @@
+language: python
+
+install:
+- pip install -r requirements.txt
+
+script:
+- cd doc
+- make html
+- touch build/html/.nojekyll
+
+before_deploy:
+- find ./doc/build/html
+- git status
+#- ./opkg-utils/opkg-make-index ./pages_out/ | tee ./pages_out/Packages
+#- gzip ./pages_out/Packages
+
+deploy:
+  provider: pages
+  local_dir: ./doc/build/html
+  github_token: $GITHUB_TOKEN
+  skip_cleanup: true
+  target_branch: gh-pages
+  on:
+    branch: master
