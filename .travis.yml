@@ -6,12 +6,6 @@ install:
 script:
 - ./build.sh
 
-before_deploy:
-- find ./doc/build/html
-- git status
-#- ./opkg-utils/opkg-make-index ./pages_out/ | tee ./pages_out/Packages
-#- gzip ./pages_out/Packages
-
 deploy:
   provider: pages
   local_dir: ./doc/build/html
