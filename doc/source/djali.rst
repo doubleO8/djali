@@ -12,6 +12,12 @@ CouchDB
 .. automodule:: djali.couchdb
     :members:
 
+Tools
++++++
+
+.. automodule:: djali.tools
+    :members:
+
 DynamoDB
 --------
 
