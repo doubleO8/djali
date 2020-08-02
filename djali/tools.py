@@ -7,6 +7,8 @@ from six.moves.urllib.parse import urljoin
 from six.moves.urllib.parse import urlparse, ParseResult
 from djali.couchdb import CloudiControl
 
+WARNING_FMT = "GOT {status_code!r} while trying {method:s} {url!r}"
+
 
 class DjaliDatabaseManager(object):
     """
@@ -18,6 +20,7 @@ class DjaliDatabaseManager(object):
         instance_url (str): CouchDB instance URL \
             (with administrative credentials, if needed!)
     """
+
     def __init__(self, instance_url, *args, **kwargs):
         self.log = kwargs.get("use_log", logging.getLogger(__name__))
         p_url = urlparse(instance_url)
@@ -105,8 +108,9 @@ class DjaliDatabaseManager(object):
 
         for req in (req1, req2):
             if req.status_code // 100 != 2:
-                mfg = "Oh No! GOT {!r} while trying {!r}".format(
-                    req.status_code, req.request.url)
+                mfg = WARNING_FMT.format(
+                    status_code=req.status_code,
+                    method=req.request.method, url=req.request.url)
                 use_log.error(mfg)
 
                 raise ValueError(mfg)
@@ -141,17 +145,19 @@ class DjaliDatabaseManager(object):
                 continue
 
             if req_m_preflight.status_code // 100 == 4:
-                mfg = "GOT {!r} while trying {!r}".format(
-                    req_m_preflight.status_code, meta_db_url)
-                use_log.error(mfg)
-
-                raise ValueError(mfg)
+                mfg = WARNING_FMT.format(
+                    status_code=req_m_preflight.status_code,
+                    method=req_m_preflight.request.method,
+                    url=meta_db_url)
+                use_log.warning(mfg)
 
             req_m = session.put(meta_db_url)
             if req_m.status_code // 100 != 2:
-                mfg = "GOT {!r} while trying {!r}".format(
-                    req_m_preflight.status_code, meta_db_url)
-                use_log.error(mfg)
+                mfg = WARNING_FMT.format(
+                    status_code=req_m_preflight.status_code,
+                    method=req_m_preflight.request.method,
+                    url=meta_db_url)
+                use_log.warning(mfg)
 
                 raise ValueError(mfg)
 
@@ -159,6 +165,11 @@ class DjaliDatabaseManager(object):
                       **kwargs):
         """
         Initialise a CouchDB database for given credentials.
+
+        .. versionchanged:: 0.1.9
+
+            One needs to use the ``may_raise`` parameter to explicitely request
+            raising of an exception on error.
 
         Args:
             db_name (str): Database name
@@ -169,6 +180,8 @@ class DjaliDatabaseManager(object):
         Keyword Args:
             create_admin_user (bool, optional): True if user shall be created \
                 as an administrative account for current CouchDB instance
+            may_raise (bool): if exception shall be raised on error \
+                defaults to ``False``
 
         Raises:
             ValueError: If anything went wrong
@@ -202,7 +215,8 @@ class DjaliDatabaseManager(object):
 
         if req0.status_code // 100 != 2:
             use_log.warning("Create user {!r}: {!r}".format(username, req0))
-            raise ValueError('Create user failed')
+            if kwargs.get("may_raise", False):
+                raise ValueError('Create user failed')
 
         self.djali_create_database(db_name, username, session=session,
                                    use_log=use_log)
