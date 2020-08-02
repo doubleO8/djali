@@ -5,6 +5,9 @@ import logging
 import requests
 from six.moves.urllib.parse import urljoin
 from six.moves.urllib.parse import urlparse, ParseResult
+from cloudant.replicator import Replicator
+from cloudant.client import CouchDB
+
 from djali.couchdb import CloudiControl
 
 WARNING_FMT = "GOT {status_code!r} while trying {method:s} {url!r}"
@@ -13,7 +16,7 @@ WARNING_FMT = "GOT {status_code!r} while trying {method:s} {url!r}"
 class DjaliDatabaseManager(object):
     """
     Controller implementing simple database and user management for a CouchDB
-    instance. Basically it allows you to create a database and grantaccess
+    instance. Basically it allows you to create a database and grant access
     for one specific user to it.
 
     Args:
@@ -293,3 +296,45 @@ class DjaliDatabaseManager(object):
                 return db_url, CloudiControl(db_url, use_log=use_log)
 
             raise ValueError(herror.response.status_code)
+
+    def setup_replication(self, source_db_name, target, repl_id=None,
+                          use_log=None, **kwargs):
+        """
+        Set up replication of a database.
+
+        Args:
+            source_db_name: Source database
+            target: Target database URL or :py:class:`djali.couchdb.CloudiControl` instance
+            repl_id (str, optional): replication document ID
+            use_log (logging.Logger): Override logger instance
+
+        Keyword Args:
+            continuous(bool): Continuous replication (defaults to ``False``)
+
+        Returns:
+            cloudant.document.Document: replication document
+        """
+        if use_log is None:
+            use_log = self.log
+
+        client = CouchDB(self._root_auth[0], self._root_auth[1],
+                         url=self.instance_url,
+                         connect=True, auto_renew=True)
+        replicator_obj = Replicator(client)
+
+        try:
+            target_database = target.database
+        except Exception:
+            target = CloudiControl(target, create=True)
+            target_database = target.database
+
+        source_database = client[source_db_name]
+        use_log.info(
+            "Setting up replication: {!s} -> {!s}".format(source_database,
+                                                          target_database))
+
+        return replicator_obj.create_replication(
+            source_database, target_database,
+            repl_id=repl_id,
+            create_target=True, continuous=kwargs.get("continuous", False)
+        )
