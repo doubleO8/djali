@@ -21,11 +21,11 @@ setup(
     packages=['djali'],
     install_requires=[
         'six>=1.13.0',
-        'cloudant>=2.12.0',
+        'cloudant>=2.13.0',
     ],
     extras_require={
         "dynamodb":  [
-            "boto3>=1.12.38",
+            "boto3>=1.19.21",
         ],
     }
 )
