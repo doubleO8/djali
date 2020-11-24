@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Base &mdash; djali 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to djali’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> djali
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#module-djali.couchdb">CouchDB</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-djali.tools">Tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-djali.dynamodb">DynamoDB</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">djali</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Base</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/djali.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-djali.base">
+<span id="base"></span><span id="djali-label"></span><h1>Base<a class="headerlink" href="#module-djali.base" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="djali.base.KVStorageMixin">
+<em class="property">class </em><code class="sig-prename descclassname">djali.base.</code><code class="sig-name descname">KVStorageMixin</code><a class="reference internal" href="_modules/djali/base.html#KVStorageMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.base.KVStorageMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>A very simple key/value interface to be implemented by storage controllers</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-djali.couchdb">
+<span id="couchdb"></span><h1>CouchDB<a class="headerlink" href="#module-djali.couchdb" title="Permalink to this headline">¶</a></h1>
+<dl class="py data">
+<dt id="djali.couchdb.COUCHDB_DB_NAME">
+<code class="sig-prename descclassname">djali.couchdb.</code><code class="sig-name descname">COUCHDB_DB_NAME</code><em class="property"> = 'djali'</em><a class="headerlink" href="#djali.couchdb.COUCHDB_DB_NAME" title="Permalink to this definition">¶</a></dt>
+<dd><p>fallback database name</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="djali.couchdb.COUCHDB_PASSWORD">
+<code class="sig-prename descclassname">djali.couchdb.</code><code class="sig-name descname">COUCHDB_PASSWORD</code><em class="property"> = ''</em><a class="headerlink" href="#djali.couchdb.COUCHDB_PASSWORD" title="Permalink to this definition">¶</a></dt>
+<dd><p>fallback password</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="djali.couchdb.COUCHDB_URL">
+<code class="sig-prename descclassname">djali.couchdb.</code><code class="sig-name descname">COUCHDB_URL</code><em class="property"> = 'http://127.0.0.1:5984'</em><a class="headerlink" href="#djali.couchdb.COUCHDB_URL" title="Permalink to this definition">¶</a></dt>
+<dd><p>fallback CouchDB instance URL</p>
+</dd></dl>
+
+<dl class="py data">
+<dt id="djali.couchdb.COUCHDB_USERNAME">
+<code class="sig-prename descclassname">djali.couchdb.</code><code class="sig-name descname">COUCHDB_USERNAME</code><em class="property"> = ''</em><a class="headerlink" href="#djali.couchdb.COUCHDB_USERNAME" title="Permalink to this definition">¶</a></dt>
+<dd><p>fallback username</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="djali.couchdb.CloudiControl">
+<em class="property">class </em><code class="sig-prename descclassname">djali.couchdb.</code><code class="sig-name descname">CloudiControl</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/couchdb.html#CloudiControl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.couchdb.CloudiControl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controller for accessing CouchDB instances</p>
+<dl class="py method">
+<dt id="djali.couchdb.CloudiControl.create">
+<code class="sig-name descname">create</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/couchdb.html#CloudiControl.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.couchdb.CloudiControl.create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If neither <a href="#id1"><span class="problematic" id="id2">*</span></a>args nor <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs is given</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Created document</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://python-cloudant.readthedocs.io/en/stable/document.html#cloudant.document.Document" title="(in python-cloudant v2.13.0)">cloudant.document.Document</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="djali.couchdb.CloudiControl.lookup">
+<code class="sig-name descname">lookup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/couchdb.html#CloudiControl.lookup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.couchdb.CloudiControl.lookup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lookup document matching given key/value pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – lookup field</p></li>
+<li><p><strong>value</strong> – lookup value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Matched document</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://python-cloudant.readthedocs.io/en/stable/document.html#cloudant.document.Document" title="(in python-cloudant v2.13.0)">cloudant.document.Document</a></p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.9)"><strong>KeyError</strong></a> – If not matching document could be found</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="djali.couchdb.CouchControl">
+<em class="property">class </em><code class="sig-prename descclassname">djali.couchdb.</code><code class="sig-name descname">CouchControl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/couchdb.html#CouchControl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.couchdb.CouchControl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attic interface controller class</p>
+</dd></dl>
+
+<div class="section" id="module-djali.tools">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-djali.tools" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="djali.tools.DjaliDatabaseManager">
+<em class="property">class </em><code class="sig-prename descclassname">djali.tools.</code><code class="sig-name descname">DjaliDatabaseManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">instance_url</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/tools.html#DjaliDatabaseManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.tools.DjaliDatabaseManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Controller implementing simple database and user management for a CouchDB
+instance. Basically it allows you to create a database and grant access
+for one specific user to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>instance_url</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – CouchDB instance URL             (with administrative credentials, if needed!)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="djali.tools.DjaliDatabaseManager.create_meta_databases">
+<code class="sig-name descname">create_meta_databases</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/tools.html#DjaliDatabaseManager.create_meta_databases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.tools.DjaliDatabaseManager.create_meta_databases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create CouchDB meta databases</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> (<em>requests.Session</em><em>, </em><em>optional</em>) – Override HTTP Session</p></li>
+<li><p><strong>use_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>logging.Logger</em></a>) – Override logger instance</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If anything went wrong</p></li>
+<li><p><strong>requests.exceptions.HTTPError</strong> – If HTTP connection went south</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="djali.tools.DjaliDatabaseManager.djali_create_database">
+<code class="sig-name descname">djali_create_database</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">auth</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/tools.html#DjaliDatabaseManager.djali_create_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.tools.DjaliDatabaseManager.djali_create_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create CouchDB database accessible by given user.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>User will be granted administrative privileges for database</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database</p></li>
+<li><p><strong>username</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – User for authentication</p></li>
+<li><p><strong>session</strong> (<em>requests.Session</em><em>, </em><em>optional</em>) – Override HTTP Session</p></li>
+<li><p><strong>use_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>logging.Logger</em></a>) – Override logger instance</p></li>
+<li><p><strong>auth</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)"><em>tuple</em></a><em>, </em><em>optional</em>) – Override used authentication credentials</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If anything went wrong</p></li>
+<li><p><strong>requests.exceptions.HTTPError</strong> – If HTTP connection went south</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="djali.tools.DjaliDatabaseManager.djali_init_db">
+<code class="sig-name descname">djali_init_db</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">use_log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/tools.html#DjaliDatabaseManager.djali_init_db"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.tools.DjaliDatabaseManager.djali_init_db" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise a CouchDB database for given credentials.</p>
+<div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 0.1.9: </span>One needs to use the <code class="docutils literal notranslate"><span class="pre">may_raise</span></code> parameter to explicitely request
+raising of an exception on error.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database name</p></li>
+<li><p><strong>username</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database user</p></li>
+<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database password</p></li>
+<li><p><strong>use_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>logging.Logger</em></a>) – Override logger instance</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>create_admin_user</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – True if user shall be created                 as an administrative account for current CouchDB instance</p></li>
+<li><p><strong>may_raise</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – if exception shall be raised on error                 defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If anything went wrong</p></li>
+<li><p><strong>requests.exceptions.HTTPError</strong> – If HTTP connection went south</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Database URL</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="djali.tools.DjaliDatabaseManager.djali_setup">
+<code class="sig-name descname">djali_setup</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="n">username</span></em>, <em class="sig-param"><span class="n">password</span></em>, <em class="sig-param"><span class="n">use_log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fastlane</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/tools.html#DjaliDatabaseManager.djali_setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.tools.DjaliDatabaseManager.djali_setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up a CouchDB database for given credentials. If user is not
+existing it will created.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">fastlane</span> <span class="pre">=</span> <span class="pre">True</span></code> it is only checked if the user is
+already existing and granted access to CouchDB instance. The
+database itself may or may not exist!</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database name</p></li>
+<li><p><strong>username</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database user</p></li>
+<li><p><strong>password</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database password</p></li>
+<li><p><strong>use_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>logging.Logger</em></a>) – Override logger instance</p></li>
+<li><p><strong>fastlane</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>create_admin_user</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – True if user shall be created                 as an administrative account for current CouchDB instance</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.9)"><strong>ValueError</strong></a> – If anything went wrong</p></li>
+<li><p><strong>requests.exceptions.HTTPError</strong> – If HTTP connection went south</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Database URL and <a class="reference internal" href="#djali.couchdb.CloudiControl" title="djali.couchdb.CloudiControl"><code class="xref py py-class docutils literal notranslate"><span class="pre">djali.couchdb.CloudiControl</span></code></a>                 instance</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.9)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="djali.tools.DjaliDatabaseManager.setup_replication">
+<code class="sig-name descname">setup_replication</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source_db_name</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">repl_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_log</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/tools.html#DjaliDatabaseManager.setup_replication"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.tools.DjaliDatabaseManager.setup_replication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set up replication of a database.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_db_name</strong> – Source database</p></li>
+<li><p><strong>target</strong> – Target database URL or <a class="reference internal" href="#djali.couchdb.CloudiControl" title="djali.couchdb.CloudiControl"><code class="xref py py-class docutils literal notranslate"><span class="pre">djali.couchdb.CloudiControl</span></code></a> instance</p></li>
+<li><p><strong>repl_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – replication document ID</p></li>
+<li><p><strong>use_log</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.9)"><em>logging.Logger</em></a>) – Override logger instance</p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>continuous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Continuous replication (defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>replication document</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://python-cloudant.readthedocs.io/en/stable/document.html#cloudant.document.Document" title="(in python-cloudant v2.13.0)">cloudant.document.Document</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="djali.tools.DjaliDatabaseManager.urls_for">
+<code class="sig-name descname">urls_for</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="n">username</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/tools.html#DjaliDatabaseManager.urls_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.tools.DjaliDatabaseManager.urls_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate URLs for given CouchDB database and username.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>db_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Database</p></li>
+<li><p><strong>username</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – User for authentication</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>URLs</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)">dict</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-djali.dynamodb">
+<span id="dynamodb"></span><h1>DynamoDB<a class="headerlink" href="#module-djali.dynamodb" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="djali.dynamodb.DynamoController">
+<em class="property">class </em><code class="sig-prename descclassname">djali.dynamodb.</code><code class="sig-name descname">DynamoController</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">db_name</span></em>, <em class="sig-param"><span class="n">region_name</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/djali/dynamodb.html#DynamoController"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#djali.dynamodb.DynamoController" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimal DynamoDB Controller for accessing key/value datasets.</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to djali’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, doubleO8
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,534 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>djali.tools &mdash; djali 0.2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> djali
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../djali.html">Base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../djali.html#module-djali.couchdb">CouchDB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../djali.html#module-djali.dynamodb">DynamoDB</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">djali</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>djali.tools</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for djali.tools</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">six.moves.urllib.parse</span> <span class="kn">import</span> <span class="n">urljoin</span>
+<span class="kn">from</span> <span class="nn">six.moves.urllib.parse</span> <span class="kn">import</span> <span class="n">urlparse</span><span class="p">,</span> <span class="n">ParseResult</span>
+<span class="kn">from</span> <span class="nn">cloudant.replicator</span> <span class="kn">import</span> <span class="n">Replicator</span>
+<span class="kn">from</span> <span class="nn">cloudant.client</span> <span class="kn">import</span> <span class="n">CouchDB</span>
+
+<span class="kn">from</span> <span class="nn">djali.couchdb</span> <span class="kn">import</span> <span class="n">CloudiControl</span>
+
+<span class="n">WARNING_FMT</span> <span class="o">=</span> <span class="s2">&quot;GOT </span><span class="si">{status_code!r}</span><span class="s2"> while trying </span><span class="si">{method:s}</span><span class="s2"> </span><span class="si">{url!r}</span><span class="s2">&quot;</span>
+
+
+<div class="viewcode-block" id="DjaliDatabaseManager"><a class="viewcode-back" href="../../djali.html#djali.tools.DjaliDatabaseManager">[docs]</a><span class="k">class</span> <span class="nc">DjaliDatabaseManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Controller implementing simple database and user management for a CouchDB</span>
+<span class="sd">    instance. Basically it allows you to create a database and grant access</span>
+<span class="sd">    for one specific user to it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        instance_url (str): CouchDB instance URL \</span>
+<span class="sd">            (with administrative credentials, if needed!)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance_url</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_log&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="n">p_url</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">instance_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scheme</span> <span class="o">=</span> <span class="n">p_url</span><span class="o">.</span><span class="n">scheme</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_netloc</span> <span class="o">=</span> <span class="n">p_url</span><span class="o">.</span><span class="n">netloc</span>
+        <span class="k">if</span> <span class="s1">&#39;@&#39;</span> <span class="ow">in</span> <span class="n">p_url</span><span class="o">.</span><span class="n">netloc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_netloc</span> <span class="o">=</span> <span class="n">p_url</span><span class="o">.</span><span class="n">netloc</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">username</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">p_url</span><span class="o">.</span><span class="n">username</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">username</span> <span class="o">=</span> <span class="n">p_url</span><span class="o">.</span><span class="n">username</span>
+
+        <span class="k">if</span> <span class="n">p_url</span><span class="o">.</span><span class="n">password</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="n">p_url</span><span class="o">.</span><span class="n">password</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root_auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+        <span class="n">couch_db_pr</span> <span class="o">=</span> <span class="n">ParseResult</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_scheme</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_netloc</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instance_url</span> <span class="o">=</span> <span class="n">couch_db_pr</span><span class="o">.</span><span class="n">geturl</span><span class="p">()</span>
+
+<div class="viewcode-block" id="DjaliDatabaseManager.urls_for"><a class="viewcode-back" href="../../djali.html#djali.tools.DjaliDatabaseManager.urls_for">[docs]</a>    <span class="k">def</span> <span class="nf">urls_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate URLs for given CouchDB database and username.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            db_name (str): Database</span>
+<span class="sd">            username (str): User for authentication</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: URLs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;db&quot;</span><span class="p">:</span> <span class="n">urljoin</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance_url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">db_name</span><span class="p">),</span>
+            <span class="s2">&quot;permissions&quot;</span><span class="p">:</span> <span class="n">urljoin</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance_url</span><span class="p">,</span> <span class="s1">&#39;/</span><span class="si">{:s}</span><span class="s1">/_security&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">db_name</span><span class="p">)),</span>
+            <span class="s2">&quot;create_admin&quot;</span><span class="p">:</span> <span class="n">urljoin</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance_url</span><span class="p">,</span> <span class="s1">&#39;/_node/_local/_config/admins/&#39;</span> <span class="o">+</span> <span class="n">username</span><span class="p">),</span>
+            <span class="s2">&quot;create_user&quot;</span><span class="p">:</span> <span class="n">urljoin</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">instance_url</span><span class="p">,</span> <span class="s1">&#39;/_users/org.couchdb.user:&#39;</span> <span class="o">+</span> <span class="n">username</span><span class="p">),</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="DjaliDatabaseManager.djali_create_database"><a class="viewcode-back" href="../../djali.html#djali.tools.DjaliDatabaseManager.djali_create_database">[docs]</a>    <span class="k">def</span> <span class="nf">djali_create_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                              <span class="n">use_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create CouchDB database accessible by given user.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            User will be granted administrative privileges for database</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            db_name (str): Database</span>
+<span class="sd">            username (str): User for authentication</span>
+<span class="sd">            session (requests.Session, optional): Override HTTP Session</span>
+<span class="sd">            use_log (logging.Logger): Override logger instance</span>
+<span class="sd">            auth (tuple, optional): Override used authentication credentials</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If anything went wrong</span>
+<span class="sd">            requests.exceptions.HTTPError: If HTTP connection went south</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+
+        <span class="n">urls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">urls_for</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span>
+
+        <span class="n">db_permissions</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;admins&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">username</span><span class="p">],</span> <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;admins&quot;</span><span class="p">]},</span>
+            <span class="s2">&quot;members&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;names&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">username</span><span class="p">],</span> <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;developers&quot;</span><span class="p">]}</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">auth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_auth</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="n">auth</span>
+
+        <span class="n">req1</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;db&#39;</span><span class="p">])</span>
+        <span class="n">req2</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;permissions&#39;</span><span class="p">],</span> <span class="n">json</span><span class="o">=</span><span class="n">db_permissions</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="p">(</span><span class="n">req1</span><span class="p">,</span> <span class="n">req2</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">//</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">mfg</span> <span class="o">=</span> <span class="n">WARNING_FMT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">status_code</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
+                <span class="n">use_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">mfg</span><span class="p">)</span>
+
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">mfg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DjaliDatabaseManager.create_meta_databases"><a class="viewcode-back" href="../../djali.html#djali.tools.DjaliDatabaseManager.create_meta_databases">[docs]</a>    <span class="k">def</span> <span class="nf">create_meta_databases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create CouchDB meta databases</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            session (requests.Session, optional): Override HTTP Session</span>
+<span class="sd">            use_log (logging.Logger): Override logger instance</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If anything went wrong</span>
+<span class="sd">            requests.exceptions.HTTPError: If HTTP connection went south</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+
+        <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_auth</span>
+
+        <span class="n">meta_dbs</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;_users&#39;</span><span class="p">,</span> <span class="s1">&#39;_replicator&#39;</span><span class="p">,</span> <span class="s1">&#39;_global_changes&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">meta_db</span> <span class="ow">in</span> <span class="n">meta_dbs</span><span class="p">:</span>
+            <span class="n">meta_db_url</span> <span class="o">=</span> <span class="n">urljoin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">meta_db</span><span class="p">)</span>
+            <span class="n">use_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Checking </span><span class="si">{:s}</span><span class="s2"> ..&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">meta_db_url</span><span class="p">))</span>
+            <span class="n">req_m_preflight</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">meta_db_url</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">req_m_preflight</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">req_m_preflight</span><span class="o">.</span><span class="n">status_code</span> <span class="o">//</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="n">mfg</span> <span class="o">=</span> <span class="n">WARNING_FMT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">status_code</span><span class="o">=</span><span class="n">req_m_preflight</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="n">req_m_preflight</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">meta_db_url</span><span class="p">)</span>
+                <span class="n">use_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">mfg</span><span class="p">)</span>
+
+            <span class="n">req_m</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">meta_db_url</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">req_m</span><span class="o">.</span><span class="n">status_code</span> <span class="o">//</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">mfg</span> <span class="o">=</span> <span class="n">WARNING_FMT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">status_code</span><span class="o">=</span><span class="n">req_m_preflight</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+                    <span class="n">method</span><span class="o">=</span><span class="n">req_m_preflight</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+                    <span class="n">url</span><span class="o">=</span><span class="n">meta_db_url</span><span class="p">)</span>
+                <span class="n">use_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">mfg</span><span class="p">)</span>
+
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">mfg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DjaliDatabaseManager.djali_init_db"><a class="viewcode-back" href="../../djali.html#djali.tools.DjaliDatabaseManager.djali_init_db">[docs]</a>    <span class="k">def</span> <span class="nf">djali_init_db</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">use_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise a CouchDB database for given credentials.</span>
+
+<span class="sd">        .. versionchanged:: 0.1.9</span>
+
+<span class="sd">            One needs to use the ``may_raise`` parameter to explicitely request</span>
+<span class="sd">            raising of an exception on error.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            db_name (str): Database name</span>
+<span class="sd">            username (str): Database user</span>
+<span class="sd">            password (str): Database password</span>
+<span class="sd">            use_log (logging.Logger): Override logger instance</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            create_admin_user (bool, optional): True if user shall be created \</span>
+<span class="sd">                as an administrative account for current CouchDB instance</span>
+<span class="sd">            may_raise (bool): if exception shall be raised on error \</span>
+<span class="sd">                defaults to ``False``</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If anything went wrong</span>
+<span class="sd">            requests.exceptions.HTTPError: If HTTP connection went south</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Database URL</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+
+        <span class="n">create_admin_user</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;create_admin_user&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">urls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">urls_for</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span>
+
+        <span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">session</span><span class="p">()</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_auth</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_meta_databases</span><span class="p">(</span><span class="n">use_log</span><span class="o">=</span><span class="n">use_log</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">create_admin_user</span><span class="p">:</span>
+            <span class="n">req0</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;create_admin&#39;</span><span class="p">],</span> <span class="n">json</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">create_args</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span>
+                <span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span>
+                <span class="s2">&quot;roles&quot;</span><span class="p">:</span> <span class="p">[],</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span>
+            <span class="p">}</span>
+            <span class="n">req0</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">urls</span><span class="p">[</span><span class="s1">&#39;create_user&#39;</span><span class="p">],</span> <span class="n">json</span><span class="o">=</span><span class="n">create_args</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">req0</span><span class="o">.</span><span class="n">status_code</span> <span class="o">//</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">use_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Create user </span><span class="si">{!r}</span><span class="s2">: </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">req0</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;may_raise&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Create user failed&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">djali_create_database</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                                   <span class="n">use_log</span><span class="o">=</span><span class="n">use_log</span><span class="p">)</span>
+
+        <span class="n">db_url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{scheme}</span><span class="s1">://</span><span class="si">{username}</span><span class="s1">:</span><span class="si">{password}</span><span class="s1">@</span><span class="si">{netloc}</span><span class="s1">/</span><span class="si">{db_name}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+            <span class="n">db_name</span><span class="o">=</span><span class="n">db_name</span><span class="p">,</span>
+            <span class="n">netloc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_netloc</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheme</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">db_url</span></div>
+
+<div class="viewcode-block" id="DjaliDatabaseManager.djali_setup"><a class="viewcode-back" href="../../djali.html#djali.tools.DjaliDatabaseManager.djali_setup">[docs]</a>    <span class="k">def</span> <span class="nf">djali_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">use_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">fastlane</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up a CouchDB database for given credentials. If user is not</span>
+<span class="sd">        existing it will created.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            When using ``fastlane = True`` it is only checked if the user is</span>
+<span class="sd">            already existing and granted access to CouchDB instance. The</span>
+<span class="sd">            database itself may or may not exist!</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            db_name (str): Database name</span>
+<span class="sd">            username (str): Database user</span>
+<span class="sd">            password (str): Database password</span>
+<span class="sd">            use_log (logging.Logger): Override logger instance</span>
+<span class="sd">            fastlane (bool, optional):</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            create_admin_user (bool, optional): True if user shall be created \</span>
+<span class="sd">                as an administrative account for current CouchDB instance</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If anything went wrong</span>
+<span class="sd">            requests.exceptions.HTTPError: If HTTP connection went south</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple: Database URL and :py:class:`djali.couchdb.CloudiControl` \</span>
+<span class="sd">                instance</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">db_url</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{scheme}</span><span class="s1">://</span><span class="si">{username}</span><span class="s1">:</span><span class="si">{password}</span><span class="s1">@</span><span class="si">{netloc}</span><span class="s1">/</span><span class="si">{db_name}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span> <span class="n">db_name</span><span class="o">=</span><span class="n">db_name</span><span class="p">,</span>
+            <span class="n">scheme</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_scheme</span><span class="p">,</span> <span class="n">netloc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_netloc</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">fastlane</span><span class="p">:</span>
+                <span class="n">use_log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Using fast lane! </span><span class="si">{!r}</span><span class="s2"> may or may not exist!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">db_name</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">db_url</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">req</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">404</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">djali_init_db</span><span class="p">(</span>
+                        <span class="n">db_name</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">db_url</span><span class="p">,</span> <span class="n">CloudiControl</span><span class="p">(</span><span class="n">db_url</span><span class="p">,</span> <span class="n">use_log</span><span class="o">=</span><span class="n">use_log</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">HTTPError</span> <span class="k">as</span> <span class="n">herror</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">herror</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">401</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">djali_init_db</span><span class="p">(</span><span class="n">db_name</span><span class="p">,</span>
+                                   <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+                                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">db_url</span><span class="p">,</span> <span class="n">CloudiControl</span><span class="p">(</span><span class="n">db_url</span><span class="p">,</span> <span class="n">use_log</span><span class="o">=</span><span class="n">use_log</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">herror</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DjaliDatabaseManager.setup_replication"><a class="viewcode-back" href="../../djali.html#djali.tools.DjaliDatabaseManager.setup_replication">[docs]</a>    <span class="k">def</span> <span class="nf">setup_replication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_db_name</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">repl_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                          <span class="n">use_log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set up replication of a database.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            source_db_name: Source database</span>
+<span class="sd">            target: Target database URL or :py:class:`djali.couchdb.CloudiControl` instance</span>
+<span class="sd">            repl_id (str, optional): replication document ID</span>
+<span class="sd">            use_log (logging.Logger): Override logger instance</span>
+
+<span class="sd">        Keyword Args:</span>
+<span class="sd">            continuous(bool): Continuous replication (defaults to ``False``)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            cloudant.document.Document: replication document</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_log</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+
+        <span class="n">client</span> <span class="o">=</span> <span class="n">CouchDB</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_root_auth</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root_auth</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                         <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">instance_url</span><span class="p">,</span>
+                         <span class="n">connect</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">auto_renew</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">replicator_obj</span> <span class="o">=</span> <span class="n">Replicator</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">target_database</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">database</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">CloudiControl</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">create</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">target_database</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">database</span>
+
+        <span class="n">source_database</span> <span class="o">=</span> <span class="n">client</span><span class="p">[</span><span class="n">source_db_name</span><span class="p">]</span>
+        <span class="n">use_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Setting up replication: </span><span class="si">{!s}</span><span class="s2"> -&gt; </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source_database</span><span class="p">,</span>
+                                                          <span class="n">target_database</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">replicator_obj</span><span class="o">.</span><span class="n">create_replication</span><span class="p">(</span>
+            <span class="n">source_database</span><span class="p">,</span> <span class="n">target_database</span><span class="p">,</span>
+            <span class="n">repl_id</span><span class="o">=</span><span class="n">repl_id</span><span class="p">,</span>
+            <span class="n">create_target</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">continuous</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;continuous&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, doubleO8
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
