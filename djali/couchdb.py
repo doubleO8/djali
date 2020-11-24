@@ -35,19 +35,11 @@ class CloudiControl(KVStorageMixin):
         password = COUCHDB_PASSWORD
         db_name = COUCHDB_DB_NAME
         couch_db_url = None
-        requests_ca_bundle = kwargs.get("requests_ca_bundle",
-                                        '/etc/ssl/certs/')
 
         if kwargs.get("use_log"):
             self.log = kwargs['use_log']
         else:
             self.log = logging.getLogger(__name__)
-
-        if requests_ca_bundle and os.path.exists(requests_ca_bundle):
-            if 'REQUESTS_CA_BUNDLE' not in os.environ:
-                self.log.debug("Setting env REQUESTS_CA_BUNDLE={!r}".format(
-                    requests_ca_bundle))
-                os.environ['REQUESTS_CA_BUNDLE'] = requests_ca_bundle
 
         if args:
             p_url = urlparse(args[0])
