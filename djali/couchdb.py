@@ -13,22 +13,23 @@ from djali import __version__
 from djali.base import KVStorageMixin
 
 #: fallback username
-COUCHDB_USERNAME = ''
+COUCHDB_USERNAME = ""
 
 #: fallback password
-COUCHDB_PASSWORD = ''
+COUCHDB_PASSWORD = ""
 
 #: fallback CouchDB instance URL
-COUCHDB_URL = 'http://127.0.0.1:5984'
+COUCHDB_URL = "http://127.0.0.1:5984"
 
 #: fallback database name
-COUCHDB_DB_NAME = 'djali'
+COUCHDB_DB_NAME = "djali"
 
 
 class CloudiControl(KVStorageMixin):
     """
     Controller for accessing CouchDB instances
     """
+
     def __init__(self, *args, **kwargs):
         self.client = None
         username = COUCHDB_USERNAME
@@ -37,7 +38,7 @@ class CloudiControl(KVStorageMixin):
         couch_db_url = None
 
         if kwargs.get("use_log"):
-            self.log = kwargs['use_log']
+            self.log = kwargs["use_log"]
         else:
             self.log = logging.getLogger(__name__)
 
@@ -58,7 +59,7 @@ class CloudiControl(KVStorageMixin):
 
             if p_url.scheme:
                 couch_db_pr = ParseResult(
-                    p_url.scheme, p_url.netloc, '', '', '', ''
+                    p_url.scheme, p_url.netloc, "", "", "", ""
                 )
                 couch_db_url = couch_db_pr.geturl()
 
@@ -74,25 +75,26 @@ class CloudiControl(KVStorageMixin):
             if not port:
                 port = 5984
 
-                if scheme == 'https':
+                if scheme == "https":
                     port = 6984
 
             if username:
                 auth_prefix_parts.append(username)
 
                 if password:
-                    auth_prefix_parts.append(':')
+                    auth_prefix_parts.append(":")
                     auth_prefix_parts.append(password)
 
             if len(auth_prefix_parts) > 0:
-                auth_prefix_parts.append('@')
+                auth_prefix_parts.append("@")
 
             netloc = "{auth_prefix}{host:s}:{port:d}".format(
-                auth_prefix=''.join(auth_prefix_parts),
-                host=host, port=int(port))
+                auth_prefix="".join(auth_prefix_parts),
+                host=host,
+                port=int(port),
+            )
 
-            couch_db_url = ParseResult(
-                scheme, netloc, "", "", "", "").geturl()
+            couch_db_url = ParseResult(scheme, netloc, "", "", "", "").geturl()
 
         if couch_db_url is None:
             couch_db_url = COUCHDB_URL
@@ -109,16 +111,22 @@ class CloudiControl(KVStorageMixin):
                 self.client.create_database(self._storage_db)
 
     def __str__(self):
-        return '<{klass}-{version} {url} {db_name}>'.format(
-            klass=self.__class__.__name__, version=__version__,
-            url=self._couch_db_url, db_name=self._storage_db
+        return "<{klass}-{version} {url} {db_name}>".format(
+            klass=self.__class__.__name__,
+            version=__version__,
+            url=self._couch_db_url,
+            db_name=self._storage_db,
         )
 
     def _connect(self):
         self.log.debug("{!s} CONNECTING".format(self))
-        self.client = CouchDB(self._auth[0], self._auth[1],
-                              url=self._couch_db_url,
-                              connect=True, auto_renew=True)
+        self.client = CouchDB(
+            self._auth[0],
+            self._auth[1],
+            url=self._couch_db_url,
+            connect=True,
+            auto_renew=True,
+        )
 
     @property
     def database(self):
@@ -127,10 +135,10 @@ class CloudiControl(KVStorageMixin):
     def create(self, *args, **kwargs):
         """
         Create a new document.
-        
+
         Raises:
             ValueError: If neither *args nor **kwargs is given
-        
+
         Returns:
             cloudant.document.Document: Created document
         """
@@ -141,8 +149,8 @@ class CloudiControl(KVStorageMixin):
         else:
             raise ValueError("WTF?!")
 
-        if '_id' not in data:
-            data['_id'] = uuid.uuid4().hex
+        if "_id" not in data:
+            data["_id"] = uuid.uuid4().hex
 
         return self.database.create_document(data)
 
@@ -151,7 +159,7 @@ class CloudiControl(KVStorageMixin):
 
     def __setitem__(self, key, value):
         del self[key]
-        value['_id'] = key
+        value["_id"] = key
         self.create(value)
 
     def __delitem__(self, key):
@@ -177,39 +185,47 @@ class CloudiControl(KVStorageMixin):
         """
         if not isinstance(value, six.string_types):
             value = value.decode("utf-8")
-        query = Query(self.database, selector={key: {'$eq': value}})
+        query = Query(self.database, selector={key: {"$eq": value}})
 
-        for doc in query(limit=1)['docs']:
+        for doc in query(limit=1)["docs"]:
             return self.database[doc["_id"]]
 
         raise KeyError(
-            "No result for {key}={value}".format(key=key, value=value))
+            "No result for {key}={value}".format(key=key, value=value)
+        )
 
     def _get_user(self, user_id):
         if isinstance(user_id, six.string_types):
             user_id = int(user_id, 10)
-        doc_id = '{:032x}'.format(user_id)
+        doc_id = "{:032x}".format(user_id)
 
         return self.database[doc_id]
 
     def _get_user_by_username(self, username):
-        self.log.info("Looking up user by name {!r} in {!r}".format(
-            username, self._storage_db))
-        return self.lookup('username', username)
+        self.log.info(
+            "Looking up user by name {!r} in {!r}".format(
+                username, self._storage_db
+            )
+        )
+        return self.lookup("username", username)
 
     def _get_user_by_credential_id(self, credential_id):
-        self.log.info("Looking up user by credential_id {!r} in {!r}".format(
-            credential_id, self._storage_db))
-        return self.lookup('credential_id', credential_id)
+        self.log.info(
+            "Looking up user by credential_id {!r} in {!r}".format(
+                credential_id, self._storage_db
+            )
+        )
+        return self.lookup("credential_id", credential_id)
 
 
 class CouchControl(CloudiControl):
     """
     Attic interface controller class
     """
+
     def __init__(self, db_name, *args, **kwargs):
         mangled_kwargs = dict()
-        copy_keys = ('host', 'port', 'username', 'password', 'create')
+        copy_keys = ("host", "port", "username", "password", "create")
 
         for cc in copy_keys:
             val = kwargs.get(cc)
