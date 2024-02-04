@@ -5,9 +5,8 @@
 nosetests.xml
 MANIFEST
 dist/
-.idea/
 .vscode/
 build/
 /venv
-/venv3
 /doc/make.bat
+.envrc

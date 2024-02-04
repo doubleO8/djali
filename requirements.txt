@@ -1,6 +1,0 @@
-six>=1.13.0
-cloudant>=2.12.0
-boto3>=1.12.38
-Sphinx==3.0.3
-sphinxcontrib-napoleon==0.7
-sphinx-rtd-theme==0.4.3
